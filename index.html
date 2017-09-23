@@ -42,7 +42,6 @@
           tempScale = 'c';
           tempC = ((Math.round(weatherData.main.temp - 273)*100))/100;
           tempF = (tempC * (9/5)) + 32;
-          console.log(weatherData);
           $("#city-state").html(weatherData.name + ", " + weatherData.sys.country);
           $("#temp").html(tempC + "\u00b0");
           $("#temp").append("<a href='#' id='unit' onclick='changeScale(); return false'> C</a>");
