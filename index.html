@@ -1,0 +1,92 @@
+<html><head>
+<!--Bootstrap CDN - 3.3.7 Complete CSS-->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  
+<!--jQuery CDN - 3.2.1 Uncompressed-->
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Weather by Current Location</title>
+<link rel="stylesheet" href="css/weather-icons.css">
+<style>
+  body{
+    background-color: #141b28;  //Purple, from chilltec.net
+  }
+  #weather-box{
+    margin-top: 5%;
+    color: #C0C0C0;  //Silver
+  }
+  #weather-icon{
+    font-size: 32px;
+  }
+</style>
+<script>
+  var tempScale;
+  var tempC;
+  var tempF;
+  (function(){  //Get the user's location
+    var location;
+    var apiURL;
+    var weatherData;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        location = [position.coords.latitude, position.coords.longitude];
+        apiURL = "https://api.openweathermap.org/data/2.5/weather?lat=" + location[0] + "&lon=" + location[1] + "&APPID=de0a7e0d4740dcb18c8822c02ca70c93";
+        $.get(apiURL, function(response){
+          var curTime = Date.now() / 1000;
+          weatherData = response;
+          tempScale = 'c';
+          tempC = ((Math.round(weatherData.main.temp - 273)*100))/100;
+          tempF = (tempC * (9/5)) + 32;
+          console.log(weatherData);
+          $("#city-state").html(weatherData.name + ", " + weatherData.sys.country);
+          $("#temp").html(tempC + "\u00b0");
+          $("#temp").append("<a href='#' id='unit' onclick='changeScale(); return false'> C</a>");
+          $("#weather-status").html(weatherData.weather[0].main);
+          if(curTime < weatherData.sys.sunrise || curTime > weatherData.sys.sunset){
+            $("#weather-icon").attr("class", ("wi wi-owm-night-" + weatherData.weather[0].id));
+          }
+          else{
+            $("#weather-icon").attr("class", ("wi wi-owm-" + weatherData.weather[0].id));
+          }
+          $("#weather-icon").attr("title", weatherData.weather[0].description);
+        });
+      });
+    }
+  })();
+  function changeScale(){
+    if(tempScale === 'c'){
+      tempScale = 'f';
+      $("#temp").html("");
+      $("#temp").html(tempF + "\u00b0");
+      $("#temp").append("<a href='#' id='unit' onclick='changeScale(); return false'> F</a>");
+      return true;
+    }
+    if(tempScale === 'f'){
+      tempScale = 'c';
+      $("#temp").html("");
+      $("#temp").html(tempC + "\u00b0");
+      $("#temp").append("<a href='#' id='unit' onclick='changeScale(); return false'> C</a>");
+      return true;
+    }
+  };
+</script>
+  
+</head>
+<body>
+<div class="row">
+  <div class="col-md-4 col-md-offset-4 container-fluid text-center" 
+    id="weather-box">
+    <h1>Weather</h1>
+    <h2 id="city-state"></h2>
+    <h2 id="temp"></h2>
+    <h2 id="weather-status"></h2>
+    <i id="weather-icon" class=""></i>
+    <h5>github</h5>
+  </div> 
+</div>
+</body></html>
